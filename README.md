@@ -87,11 +87,17 @@ python app.py
 ### 📷 Command Center Screenshots
 *A glimpse into the AGRI INTELLIGENCE dashboards:*
 
-**Main Dashboard:**
-<img src="static/screenshot1.png" width="800" alt="Main Dashboard"/>
+**1. National Agri-Price Command Center Dashboard:**
+<img src="static/screenshot-cmd2.png" width="800" alt="Main Dashboard"/>
 
-**AI Farmer Advisor with exact HTML5 Geolocation Tracking:**
-<img src="static/screenshot2.png" width="800" alt="AI Farmer Advisor"/>
+**2. 23 Commodities Real-time Tracking & Top Gainers:**
+<img src="static/screenshot-cmd3.png" width="800" alt="All Crops Listing"/>
+
+**3. Commodity Details & Interactive AI Forecast Charts:**
+<img src="static/screenshot-cmd1.png" width="800" alt="Commodity Charts"/>
+
+**4. AI Farming Advisor with exact HTML5 Geolocation Tracking:**
+<img src="static/screenshot-cmd4.png" width="800" alt="AI Farmer Advisor"/>
 
 ----------
 
