@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>{{ context.name|capitalize }} — AGRI INTELLIGENCE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    :root{
+      --bg:#f4f6fa; --card:#ffffff;
+      --red:#d92b2b; --red2:#b91c1c; --red-l:#fee2e2; --red-xl:#fff5f5;
+      --orange:#ea580c; --gold:#d97706;
+      --green:#16a34a; --green-l:#dcfce7;
+      --teal:#0891b2; --teal-l:#cffafe;
+      --pur:#7c3aed; --pur-l:#ede9fe;
+      --txt:#111827; --txt2:#374151; --mut:#6b7280;
+      --border:#e5e7eb; --bdr:rgba(217,43,43,0.22);
+      --shadow:0 2px 18px rgba(0,0,0,0.07);
+      --shadow-r:0 8px 32px rgba(217,43,43,0.15);
+      --r:18px; --f:'Outfit',sans-serif; --fm:'Space Grotesk',monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--f);background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:radial-gradient(ellipse 70% 50% at 0% 0%,rgba(217,43,43,0.06),transparent),
+                 radial-gradient(ellipse 55% 45% at 100% 100%,rgba(8,145,178,0.05),transparent);}
+    .page{position:relative;z-index:1;}
+
+    /* NAV */
+    .nav{position:sticky;top:0;z-index:999;display:flex;align-items:center;justify-content:space-between;
+      padding:13px 48px;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);
+      border-bottom:2px solid var(--red);box-shadow:0 2px 14px rgba(217,43,43,0.1);}
+    .nav-l{display:flex;align-items:center;gap:12px;text-decoration:none;}
+    .nav-logo{width:40px;height:40px;border-radius:11px;object-fit:cover;
+      border:2px solid var(--red);box-shadow:0 0 10px rgba(217,43,43,0.2);}
+    .nav-name{font-family:var(--fm);font-size:1.12rem;font-weight:800;color:var(--red);}
+    .nav-sub{font-size:.58rem;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;}
+    .nav-r{display:flex;align-items:center;gap:8px;}
+    .nl{padding:7px 15px;border-radius:40px;font-size:.76rem;font-weight:600;text-decoration:none;transition:all .25s;letter-spacing:.04em;}
+    .nl-g{background:#fff;color:var(--txt2);border:1.5px solid var(--border);}
+    .nl-g:hover{border-color:var(--red);color:var(--red);}
+    .nl-r{background:var(--red);color:#fff;box-shadow:0 3px 10px rgba(217,43,43,0.25);}
+    .nl-r:hover{background:var(--red2);transform:translateY(-1px);}
+    .nl-back{background:var(--red-xl);color:var(--red);border:1.5px solid var(--bdr);}
+    .nl-back:hover{background:var(--red-l);}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#1a0505,var(--red2) 40%,#7c1d1d 70%,#0f172a);
+      padding:44px 48px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;
+      position:relative;overflow:hidden;}
+    .hero::after{content:'';position:absolute;inset:0;
+      background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ff4444' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+    .crop-img{width:100px;height:100px;border-radius:20px;object-fit:cover;
+      border:3px solid rgba(255,255,255,0.2);box-shadow:0 0 40px rgba(0,0,0,0.4);
+      position:relative;z-index:1;}
+    .hero-info{flex:1;min-width:220px;position:relative;z-index:1;}
+    .htag{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+      color:rgba(255,255,255,.6);margin-bottom:6px;}
+    .hname{font-family:var(--fm);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;
+      color:#fff;text-transform:capitalize;line-height:1.1;margin-bottom:10px;}
+    .hchips{display:flex;gap:8px;flex-wrap:wrap;}
+    .hchip{padding:4px 12px;border-radius:30px;font-size:.72rem;
+      background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,.8);}
+    .hero-price{text-align:right;position:relative;z-index:1;}
+    .hp-lbl{font-size:.66rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+    .hp-val{font-family:var(--fm);font-size:2.8rem;font-weight:900;
+      background:linear-gradient(120deg,#fbbf24,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+    .hp-unit{font-size:.72rem;color:rgba(255,255,255,.55);margin-top:3px;}
+
+    /* SEC */
+    .sec{display:flex;align-items:center;gap:12px;padding:0 48px;margin:28px 0 16px;}
+    .sec-dot{width:10px;height:10px;border-radius:50%;background:var(--red);flex-shrink:0;}
+    .sec-t{font-family:var(--fm);font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);}
+    .sec::after{content:'';flex:1;height:1.5px;background:linear-gradient(to right,rgba(217,43,43,.3),transparent);}
+
+    /* CARD */
+    .card{background:var(--card);border-radius:var(--r);padding:22px;
+      box-shadow:var(--shadow);border:1.5px solid var(--border);transition:all .3s;}
+    .card:hover{box-shadow:var(--shadow-r);border-color:var(--bdr);transform:translateY(-4px);}
+
+    /* GRIDS */
+    .wrap{padding:0 48px;}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:22px;}
+
+    /* FORECAST MINI CARDS */
+    .f-val{font-family:var(--fm);font-size:1.8rem;font-weight:800;color:var(--red);}
+    .f-mo{font-family:var(--fm);font-size:1rem;font-weight:600;color:var(--txt);}
+
+    /* CHART */
+    .chart-box{position:relative;height:270px;width:100%;}
+
+    /* TABLE */
+    .ptable{width:100%;border-collapse:collapse;}
+    .ptable th{background:var(--red);color:#fff;padding:12px 16px;font-size:.68rem;
+      letter-spacing:.1em;text-transform:uppercase;text-align:left;}
+    .ptable td{padding:12px 16px;font-size:.88rem;border-bottom:1px solid var(--border);}
+    .ptable tr:hover td{background:var(--red-xl);}
+    .ptable tr:last-child td{border-bottom:none;}
+    .badge{display:inline-flex;gap:4px;padding:3px 10px;border-radius:8px;font-size:.74rem;font-weight:700;}
+    .b-up{color:var(--green);background:var(--green-l);}
+    .b-dn{color:var(--red);background:var(--red-l);}
+
+    /* AI / LOCATION */
+    .btn{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:40px;
+      font-size:.84rem;font-weight:700;border:none;cursor:pointer;font-family:var(--f);transition:all .3s;}
+    .btn-r{background:var(--red);color:#fff;box-shadow:0 4px 16px rgba(217,43,43,0.3);}
+    .btn-r:hover{background:var(--red2);transform:translateY(-2px);}
+    .btn-o{background:#fff;border:1.5px solid var(--bdr);color:var(--red);}
+    .btn-o:hover{background:var(--red-xl);}
+    select.sel{width:100%;max-width:360px;padding:10px 14px;border-radius:12px;
+      background:#fff;border:2px solid var(--border);color:var(--txt);
+      font-family:var(--f);font-size:.86rem;margin-top:12px;margin-bottom:10px;outline:none;}
+    select.sel:focus{border-color:var(--red);}
+
+    /* LOC RESULT */
+    #loc-result{display:none;margin-top:14px;padding:16px;border-radius:14px;
+      background:var(--red-xl);border:1.5px solid var(--bdr);font-size:.84rem;line-height:1.7;}
+
+    /* SCORES */
+    .sbar{height:7px;border-radius:4px;background:#f1f5f9;margin-top:5px;overflow:hidden;}
+    .sfill{height:100%;border-radius:4px;}
+
+    /* WEATHER */
+    .wx-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+    .wx-d{padding:12px 6px;border-radius:12px;text-align:center;
+      background:var(--red-xl);border:1.5px solid var(--bdr);transition:all .3s;}
+    .wx-d:hover{background:var(--red-l);transform:translateY(-4px);}
+    .wx-e{font-size:1.4rem;margin-bottom:4px;}
+    .wx-t{font-family:var(--fm);font-size:.76rem;font-weight:700;color:var(--red);}
+    .wx-d2{font-size:.62rem;color:var(--mut);margin-top:2px;}
+    .wx-r{font-size:.6rem;color:var(--teal);margin-top:1px;}
+
+    /* SPIN */
+    .spin{display:inline-block;width:15px;height:15px;border-radius:50%;
+      border:2px solid rgba(217,43,43,.2);border-top-color:var(--red);
+      animation:rs .7s linear infinite;vertical-align:middle;margin-right:5px;}
+    @keyframes rs{to{transform:rotate(360deg);}}
+    .ldot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);
+      display:inline-block;animation:pg 1.4s ease-in-out infinite;}
+    @keyframes pg{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+    @media(max-width:900px){.g2,.g3{grid-template-columns:1fr 1fr;}
+      .wrap,.sec,.hero,.nav{padding-left:20px;padding-right:20px;}
+      .wx-grid{grid-template-columns:repeat(4,1fr);}}
+    @media(max-width:580px){.g2,.g3{grid-template-columns:1fr;}
+      .hero{padding:28px 20px;}.wx-grid{grid-template-columns:repeat(2,1fr);}}
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-thumb{background:rgba(217,43,43,.3);border-radius:8px;}
+  </style>
+</head>
+<body>
+<div class="page">
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-l" href="/">
+    <img class="nav-logo" src="/static/AgriIntelligenceLogo.png" alt="logo"/>
+    <div><div class="nav-name" style="font-size:1rem;">AGRI INTELLIGENCE</div><div class="nav-sub">Commodity Detail</div></div>
+  </a>
+  <div class="nav-r">
+    <a class="nl nl-back" href="/">← Dashboard</a>
+    <a class="nl nl-g" href="/ai-farmer">🤖 AI Farmer</a>
+    <a class="nl nl-r" href="/">📊 All Crops</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <img class="crop-img" src="{{ context.image_url }}" alt="{{ context.name }}"/>
+  <div class="hero-info">
+    <div class="htag">🌾 Commodity Intelligence</div>
+    <div class="hname">{{ context.name }}</div>
+    <div class="hchips">
+      <span class="hchip">📍 {{ context.prime_loc }}</span>
+      <span class="hchip">🌱 {{ context.type_c }}</span>
+      <span class="hchip">🚢 {{ context.export }}</span>
+      <span class="hchip"><span class="ldot" style="background:#fff;box-shadow:0 0 4px #fff;"></span> Live</span>
+    </div>
+  </div>
+  <div class="hero-price">
+    <div class="hp-lbl">Current Market Price</div>
+    <div class="hp-val" id="live-price">₹{{ "%.2f"|format(context.current_price) }}</div>
+    <div class="hp-unit">per Quintal (100 kg)</div>
+    <div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-top:5px;">🤖 ML predicted · real-time</div>
+  </div>
+</div>
+
+<!-- FORECAST CARDS -->
+<div class="sec"><div class="sec-dot"></div><span class="sec-t">Price Forecast Snapshot</span></div>
+<div class="wrap">
+  <div class="g3">
+    <div class="card">
+      <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;">📉 Min Price Month</div>
+      <div class="f-mo">{{ context.min_crop[0] }}</div>
+      <div class="f-val">₹{{ context.min_crop[1] }}</div>
+      <div style="height:5px;border-radius:4px;margin-top:14px;background:linear-gradient(to right,var(--red),var(--orange));"></div>
+      <div style="font-size:.7rem;color:var(--mut);margin-top:8px;">⚠ Best buy window</div>
+    </div>
+    <div class="card">
+      <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;">📈 Max Price Month</div>
+      <div class="f-mo">{{ context.max_crop[0] }}</div>
+      <div class="f-val" style="color:var(--green);">₹{{ context.max_crop[1] }}</div>
+      <div style="height:5px;border-radius:4px;margin-top:14px;background:linear-gradient(to right,var(--green),var(--teal));"></div>
+      <div style="font-size:.7rem;color:var(--mut);margin-top:8px;">🚀 Best sell month</div>
+    </div>
+    <div class="card">
+      <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;">💹 12-Month Range</div>
+      <div style="display:flex;justify-content:space-between;margin:10px 0 6px;font-size:.78rem;">
+        <span style="color:var(--red);">Min ₹{{ context.min_crop[1] }}</span>
+        <span style="color:var(--green);">Max ₹{{ context.max_crop[1] }}</span>
+      </div>
+      <div style="height:10px;border-radius:6px;background:#f1f5f9;overflow:hidden;">
+        <div style="height:100%;width:72%;border-radius:6px;background:linear-gradient(to right,var(--red),var(--gold),var(--green));"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:.66rem;color:var(--mut);">
+        <span>{{ context.min_crop[0] }}</span><span>{{ context.max_crop[0] }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="sec"><div class="sec-dot"></div><span class="sec-t">Price Analytics — Forecast & History</span></div>
+<div class="wrap">
+  <div class="g2">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div>
+          <div style="font-size:.65rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;">30-Day Live Forecast</div>
+          <div style="font-family:var(--fm);font-size:.93rem;font-weight:700;">Real-Time Price Trend</div>
+        </div>
+        <span id="live-lbl" style="padding:4px 12px;border-radius:20px;font-size:.68rem;font-weight:600;
+          background:var(--red-xl);border:1px solid var(--bdr);color:var(--red);">
+          <span class="spin"></span>Loading…
+        </span>
+      </div>
+      <div class="chart-box"><canvas id="chart30d"></canvas></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div>
+          <div style="font-size:.65rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;">12-Month AI Forecast</div>
+          <div style="font-family:var(--fm);font-size:.93rem;font-weight:700;">Future Price Prediction</div>
+        </div>
+        <span style="padding:4px 12px;border-radius:20px;font-size:.68rem;font-weight:600;
+          background:var(--red-l);border:1px solid var(--bdr);color:var(--red);">AI Predicted</span>
+      </div>
+      <div class="chart-box"><canvas id="chartForecast"></canvas></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div>
+          <div style="font-size:.65rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;">12-Month Historical</div>
+          <div style="font-family:var(--fm);font-size:.93rem;font-weight:700;">Past Price Pattern</div>
+        </div>
+        <span style="padding:4px 12px;border-radius:20px;font-size:.68rem;font-weight:600;
+          background:var(--pur-l);border:1px solid rgba(124,58,237,0.2);color:var(--pur);">Past Data</span>
+      </div>
+      <div class="chart-box"><canvas id="chartHistory"></canvas></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div>
+          <div style="font-size:.65rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;">Price Volatility</div>
+          <div style="font-family:var(--fm);font-size:.93rem;font-weight:700;">% Change Over Months</div>
+        </div>
+        <span style="padding:4px 12px;border-radius:20px;font-size:.68rem;font-weight:600;
+          background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.25);color:var(--gold);">Volatility</span>
+      </div>
+      <div class="chart-box"><canvas id="chartChange"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- FORECAST TABLE -->
+<div class="sec"><div class="sec-dot"></div><span class="sec-t">Month-by-Month Forecast</span></div>
+<div class="wrap">
+  <div class="card" style="padding:0;margin-bottom:22px;overflow:hidden;">
+    <table class="ptable">
+      <thead><tr><th>Month</th><th>Price / Qtl</th><th>% Change</th><th>Signal</th></tr></thead>
+      <tbody>
+      {% for item in context.forecast_values %}
+      <tr>
+        <td style="font-weight:700;">{{ item[0] }}</td>
+        <td style="font-family:var(--fm);font-weight:700;">₹{{ item[1] }}</td>
+        <td><span class="badge {% if item[2]>=0 %}b-up{% else %}b-dn{% endif %}">{% if item[2]>=0 %}▲{% else %}▼{% endif %} {{ item[2] }}%</span></td>
+        <td style="font-size:.78rem;color:var(--mut);">
+          {% if item[2]>=2 %}🟢 Buy{% elif item[2]>=0 %}🔵 Hold{% elif item[2]>=-2 %}🟡 Watch{% else %}🔴 Sell{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- LIVE WEATHER -->
+<div class="sec"><div class="sec-dot"></div><span class="sec-t">7-Day Live Weather (Real-Time)</span></div>
+<div class="wrap">
+  <div class="card" style="margin-bottom:22px;">
+    <div id="wx-loc" style="font-size:.75rem;color:var(--mut);margin-bottom:14px;"><span class="spin"></span>Fetching weather for your area…</div>
+    <div class="wx-grid" id="wx-grid">
+      {% for i in range(7) %}
+      <div class="wx-d"><div class="wx-e" id="wi{{i}}">⏳</div>
+        <div class="wx-t" id="wt{{i}}">--°</div>
+        <div class="wx-d2" id="wd{{i}}">--</div>
+        <div class="wx-r" id="wr{{i}}">--mm</div></div>
+      {% endfor %}
+    </div>
+    <div id="wx-tip" style="display:none;margin-top:14px;padding:12px 16px;border-radius:12px;
+      background:var(--red-xl);border:1.5px solid var(--bdr);font-size:.82rem;color:var(--txt2);line-height:1.65;"></div>
+  </div>
+</div>
+
+<!-- AI FARMING INTELLIGENCE -->
+<div class="sec"><div class="sec-dot"></div><span class="sec-t">AI Farming Intelligence</span></div>
+<div class="wrap">
+  <div class="g2" style="margin-bottom:22px;">
+
+    <!-- Location Advisor -->
+    <div class="card" style="grid-column:1/-1;">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;">
+        <div style="width:50px;height:50px;border-radius:13px;background:var(--red-xl);
+          border:1.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">📍</div>
+        <div style="flex:1;min-width:240px;">
+          <div style="font-family:var(--fm);font-size:1rem;font-weight:700;color:var(--red);margin-bottom:6px;">Smart Crop Advisor — Your Location</div>
+          <div style="font-size:.84rem;color:var(--mut);line-height:1.62;margin-bottom:14px;">
+            Allow location access for AI-powered advice on whether <b style="color:var(--txt);">{{ context.name }}</b> is ideal for your soil & climate.
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-r" id="btn-loc" onclick="getLocation()">📍 Allow Location</button>
+            <button class="btn btn-o" onclick="document.getElementById('man').style.display='block'">✍ Choose State</button>
+          </div>
+          <div id="man" style="display:none;margin-top:12px;">
+            <select class="sel" id="state-sel">
+              <option value="">-- Select Your State --</option>
+              <option>Punjab</option><option>Haryana</option><option>Uttar Pradesh</option>
+              <option>Bihar</option><option>West Bengal</option><option>Andhra Pradesh</option>
+              <option>Telangana</option><option>Karnataka</option><option>Tamil Nadu</option>
+              <option>Maharashtra</option><option>Madhya Pradesh</option><option>Rajasthan</option>
+              <option>Gujarat</option><option>Odisha</option><option>Assam</option>
+              <option>Himachal Pradesh</option><option>Uttarakhand</option><option>Jharkhand</option>
+            </select><br>
+            <button class="btn btn-r" style="margin-top:6px;" onclick="analyseByState()">🚀 Analyse</button>
+          </div>
+          <div id="loc-status" style="font-size:.78rem;color:var(--mut);margin-top:10px;"></div>
+          <div id="loc-result"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Market Signals -->
+    <div class="card">
+      <div style="font-family:var(--fm);font-size:.92rem;font-weight:700;color:var(--red);margin-bottom:14px;">📊 AI Market Signals</div>
+      {% for color, text in [
+        ("#16a34a", "Best Sell: "+context.max_crop[0]+" — ₹"+context.max_crop[1]|string),
+        ("#ea580c", "Buy Dip: "+context.min_crop[0]+" — ₹"+context.min_crop[1]|string),
+        ("#0891b2", "Export Demand: "+context.export),
+        ("#7c3aed", "Season Type: "+context.type_c+" crop"),
+      ] %}
+      <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="width:9px;height:9px;border-radius:50%;background:{{color}};flex-shrink:0;margin-top:5px;"></div>
+        <div style="font-size:.84rem;color:var(--txt2);line-height:1.6;">{{ text }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Suitability Scores -->
+    <div class="card">
+      <div style="font-family:var(--fm);font-size:.92rem;font-weight:700;color:var(--red);margin-bottom:14px;">🏆 Crop Suitability Scores</div>
+      {% for lbl,c,w in [
+        ("📈 Price Stability","#16a34a",78),
+        ("🌧 Rainfall Dependency","#0891b2",55),
+        ("💰 Profit Outlook","#d97706",65),
+        ("🚢 Export Demand","#7c3aed",72)
+      ] %}
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px;">
+          <span>{{lbl}}</span><span style="font-weight:700;color:{{c}};">{{w}}%</span>
+        </div>
+        <div class="sbar"><div class="sfill" style="width:{{w}}%;background:{{c}};opacity:.75;"></div></div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+<!-- AI FARMER CTA -->
+<div class="wrap" style="padding-bottom:40px;">
+  <div style="padding:28px 32px;border-radius:20px;text-align:center;
+    background:linear-gradient(135deg,#1a0505,var(--red2) 70%,#7c1d1d);color:#fff;">
+    <div style="font-family:var(--fm);font-size:1.1rem;font-weight:800;margin-bottom:6px;">🤖 Want full AI Farmer analysis for your region?</div>
+    <div style="font-size:.84rem;color:rgba(255,255,255,.7);margin-bottom:16px;">Get crop rankings, weather, and personalised advice for your village &amp; district.</div>
+    <a href="/ai-farmer" style="display:inline-flex;align-items:center;gap:8px;padding:12px 26px;
+      border-radius:40px;background:#fbbf24;color:#111;font-weight:800;text-decoration:none;font-size:.88rem;">
+      🌾 AI Farmer Advisor →
+    </a>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer style="margin-top:40px;padding:48px 24px;background:linear-gradient(180deg, #fff 0%, var(--red-xlight) 100%);border-top:2px solid var(--red-light);text-align:center;">
+  <div style="font-family:var(--fm);font-size:1.6rem;font-weight:900;color:var(--red);margin-bottom:8px;">AGRI INTELLIGENCE<span style="color:var(--gold);">.</span></div>
+  <div style="font-size:.85rem;color:var(--mut);margin-bottom:24px;">Next-Generation AI Farming Intelligence Command Center</div>
+  
+  <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:32px;">
+    <a href="/" class="btn btn-o" style="padding:10px 20px;border-radius:40px;text-decoration:none;font-size:.82rem;">🏡 Dashboard</a>
+    <a href="/ai-farmer" class="btn btn-r" style="padding:10px 20px;border-radius:40px;text-decoration:none;font-size:.82rem;">🤖 AI Farmer Advisor</a>
+  </div>
+
+  <div style="font-size:.76rem;color:var(--mut);background:rgba(255,255,255,0.6);padding:12px 24px;border-radius:24px;display:inline-block;border:1px solid var(--border);">
+    © 2026 <b>AGRI INTELLIGENCE</b> &nbsp;·&nbsp; SIH24 &nbsp;·&nbsp; Data: WPI, Agmarknet, Open-Meteo
+  </div>
+</footer>
+</div>
+
+<!-- SCRIPTS -->
+<script>
+const CROP = "{{ context.name }}";
+
+const gOpts = {
+  responsive:true, maintainAspectRatio:false,
+  animation:{duration:800},
+  plugins:{
+    legend:{labels:{color:'#6b7280',font:{family:'Space Grotesk',size:11},boxWidth:12}},
+    tooltip:{backgroundColor:'#111',borderColor:'rgba(217,43,43,0.3)',borderWidth:1,
+      titleColor:'#f9fafb',bodyColor:'#d1d5db',padding:12,cornerRadius:12,
+      callbacks:{label:ctx=>' ₹'+ctx.parsed.y.toLocaleString('en-IN')+' / Qtl'}}
+  },
+  scales:{
+    x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#9ca3af',font:{family:'Space Grotesk',size:10},maxRotation:45}},
+    y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#9ca3af',font:{family:'Space Grotesk',size:10},callback:v=>'₹'+v.toLocaleString('en-IN')}}
+  }
+};
+
+// 12-Month Forecast chart
+new Chart(document.getElementById('chartForecast'),{
+  type:'line',
+  data:{
+    labels:{{ context.forecast_x | safe }},
+    datasets:[{label:'Forecast Price',data:{{ context.forecast_y | tojson }},
+      borderColor:'#d92b2b',
+      backgroundColor:(ctx)=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,270);g.addColorStop(0,'rgba(217,43,43,.18)');g.addColorStop(1,'rgba(217,43,43,.01)');return g;},
+      pointBackgroundColor:'#d92b2b',pointBorderColor:'#fff',pointBorderWidth:2,
+      pointRadius:5,pointHoverRadius:8,borderWidth:2.5,fill:true,tension:0.4}]},
+  options:gOpts
+});
+
+// 12-Month History chart
+new Chart(document.getElementById('chartHistory'),{
+  type:'line',
+  data:{
+    labels:{{ context.previous_x | tojson }},
+    datasets:[{label:'Historical Price',data:{{ context.previous_y | tojson }},
+      borderColor:'#7c3aed',
+      backgroundColor:(ctx)=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,270);g.addColorStop(0,'rgba(124,58,237,.16)');g.addColorStop(1,'rgba(124,58,237,.01)');return g;},
+      pointBackgroundColor:'#7c3aed',pointBorderColor:'#fff',pointBorderWidth:2,
+      pointRadius:5,pointHoverRadius:8,borderWidth:2.5,fill:true,tension:0.4}]},
+  options:gOpts
+});
+
+// Volatility bar chart
+const changes = {{ context.forecast_changes | tojson }};
+const chgLabels = {{ context.forecast_x | safe }};
+new Chart(document.getElementById('chartChange'),{
+  type:'bar',
+  data:{labels:chgLabels,datasets:[{label:'% Change',data:changes,
+    backgroundColor:changes.map(v=>v>=0?'rgba(22,163,74,.65)':'rgba(217,43,43,.65)'),
+    borderColor:changes.map(v=>v>=0?'#16a34a':'#d92b2b'),
+    borderWidth:1.5,borderRadius:6}]},
+  options:{...gOpts,plugins:{...gOpts.plugins,tooltip:{...gOpts.plugins.tooltip,callbacks:{label:ctx=>' '+ctx.parsed.y+'%'}}},
+    scales:{x:gOpts.scales.x,y:{...gOpts.scales.y,ticks:{...gOpts.scales.y.ticks,callback:v=>v+'%'}}}}
+});
+
+// 30-day live chart
+fetch('/api/market/'+CROP).then(r=>r.json()).then(j=>{
+  if(!j.ok)throw j.error;
+  document.getElementById('live-price').textContent='₹'+j.current_price.toLocaleString('en-IN');
+  document.getElementById('live-lbl').innerHTML='✅ Live';
+  document.getElementById('live-lbl').style.color='#16a34a';
+  document.getElementById('live-lbl').style.background='#dcfce7';
+  document.getElementById('live-lbl').style.borderColor='rgba(22,163,74,0.3)';
+  new Chart(document.getElementById('chart30d'),{
+    type:'line',
+    data:{labels:j.trend_30d.map(d=>d.date),datasets:[{label:'30-Day Live Forecast',data:j.trend_30d.map(d=>d.price),
+      borderColor:'#0891b2',
+      backgroundColor:(ctx)=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,260);g.addColorStop(0,'rgba(8,145,178,.18)');g.addColorStop(1,'rgba(8,145,178,.01)');return g;},
+      pointBackgroundColor:'#0891b2',pointBorderColor:'#fff',pointBorderWidth:2,
+      pointRadius:4,pointHoverRadius:7,borderWidth:2.5,fill:true,tension:0.45}]},
+    options:gOpts
+  });
+}).catch(()=>{document.getElementById('live-lbl').textContent='⚠ Offline';});
+
+// Weather
+const WX={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',51:'🌦',61:'🌧',71:'🌨',80:'🌧',95:'⛈'};
+function wxi(c){for(const k of Object.keys(WX).sort((a,b)=>b-a))if(c>=+k)return WX[k];return'🌡';}
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function loadWeather(lat,lon,loc){
+  document.getElementById('wx-loc').innerHTML='📍 <b>'+loc+'</b> — Live via Open-Meteo';
+  fetch('/api/weather?lat='+lat+'&lon='+lon).then(r=>r.json()).then(j=>{
+    if(!j.ok)throw j.error;
+    const d=j.data.daily;
+    for(let i=0;i<7;i++){
+      const dt=new Date(d.time[i]);
+      document.getElementById('wi'+i).textContent=wxi(d.weather_code[i]);
+      document.getElementById('wt'+i).textContent=Math.round(d.temperature_2m_max[i])+'°/'+Math.round(d.temperature_2m_min[i])+'°';
+      document.getElementById('wd'+i).textContent=DAYS[dt.getDay()]+' '+dt.getDate();
+      document.getElementById('wr'+i).textContent=(d.precipitation_sum[i]||0).toFixed(1)+'mm';
+    }
+    const rain=d.precipitation_sum.slice(0,7).reduce((a,b)=>a+b,0).toFixed(1);
+    const maxt=Math.max(...d.temperature_2m_max.slice(0,7)).toFixed(0);
+    const tip=document.getElementById('wx-tip');tip.style.display='block';
+    tip.innerHTML=`<span style="color:var(--red);font-weight:700;">🤖 AI Weather:</span> 7-day rainfall <b>${rain}mm</b>, peak <b>${maxt}°C</b>. `
+      +(+rain>40?'Heavy rain — delay sowing, check drainage.':+rain>15?'Good soil moisture — ideal sowing window.':'Dry — activate irrigation before sowing.');
+  }).catch(()=>document.getElementById('wx-loc').textContent='⚠ Weather unavailable');
+}
+
+// GPS + geocode
+function getLocation(){
+  const btn=document.getElementById('btn-loc');
+  const st=document.getElementById('loc-status');
+  if(!navigator.geolocation){st.innerHTML='<span style="color:var(--red)">❌ Geolocation unsupported</span>';return;}
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>Locating…';
+  st.innerHTML='<span class="spin"></span>Requesting GPS…';
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const{latitude:lat,longitude:lon}=pos.coords;
+    fetch('/api/geocode?lat='+lat+'&lon='+lon).then(r=>r.json()).then(j=>{
+      const state=(j.ok&&j.data.state)||stateFromCoords(lat,lon);
+      const loc=(j.ok?(j.data.village||j.data.district||state):state)+', '+state;
+      btn.innerHTML='✅ '+loc;
+      st.innerHTML=`<span style="color:var(--green)">✅ Detected: ${loc}</span>`;
+      loadWeather(lat,lon,loc);
+      showResult(state,lat,lon);
+    }).catch(()=>{
+      const state=stateFromCoords(lat,lon);
+      loadWeather(lat,lon,state);showResult(state,lat,lon);
+    });
+  },()=>{
+    btn.disabled=false;btn.innerHTML='📍 Allow Location';
+    st.innerHTML='<span style="color:var(--red)">❌ GPS denied — use manual input below</span>';
+    document.getElementById('man').style.display='block';
+    loadWeather(22.5,78.9,'Central India');
+  },{enableHighAccuracy:true,timeout:12000});
+}
+
+function analyseByState(){
+  const s=document.getElementById('state-sel').value;
+  if(!s){alert('Please select a state');return;}
+  showResult(s,null,null);
+}
+
+function stateFromCoords(lat,lon){
+  lat=+lat;lon=+lon;
+  if(lat>30&&lon<76)return"Punjab";if(lat>28&&lat<31&&lon>74&&lon<78)return"Haryana";
+  if(lat>23&&lat<30&&lon>77&&lon<84)return"Uttar Pradesh";if(lat>24&&lat<28&&lon>83&&lon<88)return"Bihar";
+  if(lat>21&&lat<27&&lon>85&&lon<89)return"West Bengal";if(lat>12&&lat<20&&lon>76&&lon<85)return"Andhra Pradesh";
+  if(lat>17&&lat<20&&lon>77&&lon<81)return"Telangana";if(lat>11&&lat<18&&lon>74&&lon<78)return"Karnataka";
+  if(lat>8&&lat<13&&lon>76&&lon<80)return"Tamil Nadu";if(lat>15&&lat<22&&lon>72&&lon<80)return"Maharashtra";
+  if(lat>21&&lat<26&&lon>74&&lon<82)return"Madhya Pradesh";if(lat>23&&lat<30&&lon>69&&lon<78)return"Rajasthan";
+  if(lat>20&&lat<24&&lon>68&&lon<74)return"Gujarat";return"Madhya Pradesh";
+}
+
+const DB={
+  "Punjab":["wheat","barley","gram","rape","cotton"],"Haryana":["wheat","barley","rape","sugarcane","cotton"],
+  "Uttar Pradesh":["sugarcane","wheat","paddy","arhar","masoor"],"Bihar":["paddy","wheat","maize","arhar","gram"],
+  "West Bengal":["paddy","jute","masoor","sesamum","moong"],"Andhra Pradesh":["paddy","groundnut","maize","sunflower","sesamum"],
+  "Telangana":["paddy","maize","cotton","groundnut","sesamum"],"Karnataka":["ragi","jowar","arhar","sunflower","sesamum"],
+  "Tamil Nadu":["paddy","groundnut","sesamum","cotton","sugarcane"],"Maharashtra":["cotton","soyabean","jowar","sugarcane","groundnut"],
+  "Madhya Pradesh":["soyabean","wheat","gram","sesamum","cotton"],"Rajasthan":["wheat","barley","gram","rape","bajra"],
+  "Gujarat":["cotton","groundnut","sesamum","wheat","jowar"],
+};
+
+function showResult(state,lat,lon){
+  const r=document.getElementById('loc-result');
+  const crops=DB[state]||[];
+  const cL=CROP.toLowerCase();
+  const good=crops.some(c=>cL.includes(c)||c.includes(cL));
+  const verdict=good?['✅ Highly Recommended','var(--green)']:['🔶 Limited Suitability','var(--gold)'];
+  r.style.display='block';
+  r.innerHTML=`<div style="font-family:var(--fm);font-size:1rem;font-weight:700;color:${verdict[1]};margin-bottom:8px;">
+      ${verdict[0]} — ${CROP} in ${state}</div>
+    <div style="font-size:.84rem;color:var(--txt2);line-height:1.75;">
+      ${good
+        ?`✅ <b>${state}</b> has ideal conditions for <b>${CROP}</b>.<br>
+           🌱 Target sell month: <b>{{ context.max_crop[0] }}</b> (₹{{ context.max_crop[1] }})<br>
+           📦 Buy/stock during: <b>{{ context.min_crop[0] }}</b> price dip.`
+        :`🔶 <b>${state}</b> has limited suitability. This crop grows best in: <b>{{ context.prime_loc }}</b>.<br>
+           💡 Consider better-suited crops for your region via <a href="/ai-farmer" style="color:var(--red)">AI Farmer →</a>`}
+    </div>`;
+}
+
+// Boot: default weather
+loadWeather(22.5,78.9,'Central India (Default)');
+</script>
+</body>
+</html>

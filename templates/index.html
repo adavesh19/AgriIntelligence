@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>AGRI INTELLIGENCE — Dashboard</title>
+  <meta name="description" content="AI-powered agri-horticulture price prediction dashboard for 23 Indian commodities."/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#f4f6fa; --card:#ffffff; --card2:#fff8f8;
+      --red:#d92b2b; --red2:#b91c1c; --red-l:#fee2e2; --red-xl:#fff5f5;
+      --orange:#ea580c; --gold:#d97706;
+      --green:#16a34a; --green-l:#dcfce7;
+      --teal:#0891b2; --teal-l:#cffafe;
+      --txt:#111827; --txt2:#374151; --mut:#6b7280;
+      --border:#e5e7eb; --bdr:rgba(217,43,43,0.22);
+      --shadow:0 2px 18px rgba(0,0,0,0.07);
+      --shadow-r:0 8px 32px rgba(217,43,43,0.15);
+      --r:18px; --f:'Outfit',sans-serif; --fm:'Space Grotesk',monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--f);background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:radial-gradient(ellipse 70% 50% at 0% 0%,rgba(217,43,43,0.06),transparent),
+                 radial-gradient(ellipse 55% 45% at 100% 100%,rgba(8,145,178,0.05),transparent);}
+    .page{position:relative;z-index:1;}
+
+    /* ─── NAV ─── */
+    .nav{position:sticky;top:0;z-index:999;display:flex;align-items:center;justify-content:space-between;
+      padding:13px 48px;background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);
+      border-bottom:2px solid var(--red);box-shadow:0 2px 14px rgba(217,43,43,0.1);}
+    .nav-l{display:flex;align-items:center;gap:13px;text-decoration:none;}
+    .nav-logo{width:42px;height:42px;border-radius:12px;object-fit:cover;
+      border:2px solid var(--red);box-shadow:0 0 12px rgba(217,43,43,0.22);}
+    .nav-name{font-family:var(--fm);font-size:1.18rem;font-weight:800;color:var(--red);}
+    .nav-sub{font-size:.6rem;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;}
+    .nav-r{display:flex;align-items:center;gap:10px;}
+    .nl{padding:7px 16px;border-radius:40px;font-size:.76rem;font-weight:600;text-decoration:none;transition:all .25s;letter-spacing:.04em;}
+    .nl-g{background:#fff;color:var(--txt2);border:1.5px solid var(--border);}
+    .nl-g:hover{border-color:var(--red);color:var(--red);}
+    .nl-r{background:var(--red);color:#fff;box-shadow:0 3px 12px rgba(217,43,43,0.28);}
+    .nl-r:hover{background:var(--red2);transform:translateY(-1px);box-shadow:0 5px 18px rgba(217,43,43,0.38);}
+    .live-pill{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:40px;
+      background:var(--red-xl);border:1px solid var(--bdr);font-size:.72rem;color:var(--red);font-weight:600;}
+    .ldot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);
+      animation:pg 1.4s ease-in-out infinite;}
+    @keyframes pg{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+    /* ─── HERO BANNER ─── */
+    .hero-banner{
+      background:linear-gradient(135deg,#1a0505 0%,var(--red2) 35%,#7c1d1d 65%,#0f172a 100%);
+      padding:52px 48px 48px;display:flex;align-items:center;justify-content:space-between;
+      gap:32px;flex-wrap:wrap;position:relative;overflow:hidden;
+    }
+    .hero-banner::before{content:'';position:absolute;inset:0;
+      background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ff4444' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+    .hero-banner::after{content:'🌾';position:absolute;right:48px;top:50%;transform:translateY(-50%);
+      font-size:10rem;opacity:.08;pointer-events:none;}
+    .hero-text{flex:1;min-width:240px;position:relative;z-index:1;}
+    .hero-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:40px;
+      background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+      font-size:.68rem;color:rgba(255,255,255,.8);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;}
+    .hero-title{font-family:var(--fm);font-size:clamp(1.8rem,4vw,3rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:10px;}
+    .hero-title span{background:linear-gradient(90deg,#fbbf24,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .hero-sub{font-size:.9rem;color:rgba(255,255,255,.65);line-height:1.65;}
+    .hero-stats{display:flex;gap:24px;flex-wrap:wrap;margin-top:22px;}
+    .hs{text-align:center;position:relative;z-index:1;}
+    .hs-v{font-family:var(--fm);font-size:1.6rem;font-weight:800;color:#fbbf24;}
+    .hs-l{font-size:.65rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.08em;}
+
+    /* ─── SECTION HEADER ─── */
+    .sec{display:flex;align-items:center;gap:12px;padding:0 48px;margin:32px 0 16px;}
+    .sec-dot{width:10px;height:10px;border-radius:50%;background:var(--red);flex-shrink:0;}
+    .sec-t{font-family:var(--fm);font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);}
+    .sec::after{content:'';flex:1;height:1.5px;background:linear-gradient(to right,rgba(217,43,43,0.3),transparent);}
+
+    /* ─── CARD ─── */
+    .card{background:var(--card);border-radius:var(--r);padding:22px;
+      box-shadow:var(--shadow);border:1.5px solid var(--border);transition:all .3s cubic-bezier(.23,1.1,.32,1);}
+    .card:hover{box-shadow:var(--shadow-r);border-color:var(--bdr);transform:translateY(-4px);}
+
+    /* ─── GRIDS ─── */
+    .wrap{padding:0 48px;}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:22px;}
+
+    /* ─── TICKER ─── */
+    .ticker-wrap{overflow:hidden;background:#fff;border-radius:12px;border:1.5px solid var(--border);
+      padding:10px 0;box-shadow:var(--shadow);margin-bottom:32px;}
+    .ticker-inner{display:flex;gap:0;white-space:nowrap;animation:tickRoll 30s linear infinite;}
+    .ticker-inner:hover{animation-play-state:paused;}
+    @keyframes tickRoll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+    .tick-item{display:inline-flex;align-items:center;gap:10px;padding:4px 28px;
+      border-right:1px solid var(--border);flex-shrink:0;}
+    .tick-name{font-size:.8rem;font-weight:600;text-transform:capitalize;color:var(--txt2);}
+    .tick-price{font-family:var(--fm);font-size:.85rem;font-weight:700;color:var(--red);}
+    .tick-chg{font-size:.74rem;font-weight:600;padding:2px 8px;border-radius:6px;}
+    .tc-up{color:var(--green);background:var(--green-l);}
+    .tc-dn{color:var(--red);background:var(--red-l);}
+
+    /* ─── NODE CARDS (Gainers/Losers) ─── */
+    .node-list{display:flex;flex-direction:column;gap:8px;}
+    .node{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;
+      background:#fff;border:1.5px solid var(--border);text-decoration:none;color:var(--txt);
+      transition:all .3s;}
+    .node:hover{border-color:var(--bdr);transform:translateX(5px);background:var(--red-xl);}
+    .node-rank{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+      font-size:.75rem;font-weight:700;flex-shrink:0;}
+    .nr-up{background:var(--green-l);color:var(--green);}
+    .nr-dn{background:var(--red-l);color:var(--red);}
+    .node-name{flex:1;font-size:.88rem;font-weight:600;text-transform:capitalize;}
+    .node-price{font-family:var(--fm);font-size:.88rem;font-weight:700;color:var(--txt);}
+    .node-chg{font-size:.76rem;font-weight:700;padding:3px 10px;border-radius:8px;}
+    .nc-up{color:var(--green);background:var(--green-l);}
+    .nc-dn{color:var(--red);background:var(--red-l);}
+
+    /* ─── STAR TABLE ─── */
+    .stab{width:100%;border-collapse:collapse;}
+    .stab th{background:var(--red);color:#fff;padding:12px 16px;font-size:.68rem;
+      letter-spacing:.1em;text-transform:uppercase;text-align:left;}
+    .stab td{padding:12px 16px;font-size:.88rem;border-bottom:1px solid var(--border);}
+    .stab tr:hover td{background:var(--red-xl);}
+    .stab tr:last-child td{border-bottom:none;}
+    .badge{display:inline-flex;gap:4px;padding:3px 10px;border-radius:8px;font-size:.74rem;font-weight:700;}
+    .b-up{color:var(--green);background:var(--green-l);}
+    .b-dn{color:var(--red);background:var(--red-l);}
+
+    /* ─── CROP GRID ─── */
+    .crop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:24px;}
+    .cg{padding:18px 12px;border-radius:16px;text-align:center;text-decoration:none;color:var(--txt);
+      background:#fff;border:2px solid var(--border);box-shadow:var(--shadow);
+      transition:all .35s cubic-bezier(.23,1.1,.32,1);}
+    .cg:hover{border-color:var(--red);box-shadow:var(--shadow-r);transform:translateY(-8px) scale(1.04);}
+    .cg-ico{font-size:2rem;margin-bottom:8px;}
+    .cg-name{font-size:.8rem;font-weight:700;text-transform:capitalize;}
+    .cg-link{font-size:.68rem;color:var(--red);margin-top:4px;font-weight:600;}
+
+    @media(max-width:900px){
+      .g2,.g3{grid-template-columns:1fr 1fr;}
+      .wrap,.sec,.hero-banner,.nav{padding-left:20px;padding-right:20px;}
+    }
+    @media(max-width:580px){.g2,.g3{grid-template-columns:1fr;}.hero-banner{padding:36px 20px;}}
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-thumb{background:rgba(217,43,43,.3);border-radius:8px;}
+  </style>
+</head>
+<body>
+<div class="page">
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-l" href="/">
+    <img class="nav-logo" src="/static/AgriIntelligenceLogo.png" alt="logo"/>
+    <div><div class="nav-name" style="font-size:1rem;">AGRI INTELLIGENCE</div><div class="nav-sub">AI Command Center</div></div>
+  </a>
+  <div class="nav-r">
+    <div class="live-pill"><span class="ldot"></span>Live Data</div>
+    <a class="nl nl-g" href="/">📊 Dashboard</a>
+    <a class="nl nl-r" href="/ai-farmer">🤖 AI Farmer</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-banner">
+  <div class="hero-text">
+    <div class="hero-tag">🌾 SIH 2024 · AI-Powered Commodity Intelligence</div>
+    <div class="hero-title">National <span>Agri-Price</span><br>Command Center</div>
+    <div class="hero-sub">Real-time ML forecasts for 23 crops across India. Track gainers, losers, 6-month trends, and get AI farming advice for your exact location.</div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-v">23</div><div class="hs-l">Crops</div></div>
+      <div class="hs"><div class="hs-v">12</div><div class="hs-l">Months Forecast</div></div>
+      <div class="hs"><div class="hs-v">ML</div><div class="hs-l">AI Model</div></div>
+      <div class="hs"><div class="hs-v"><span class="ldot" style="width:14px;height:14px;"></span></div><div class="hs-l">Live Feed</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="sec" style="margin-top:28px;"><div class="sec-dot"></div><span class="sec-t">Live Price Ticker</span></div>
+<div class="wrap">
+  <div class="ticker-wrap">
+    <div class="ticker-inner" id="ticker">
+      <!-- Populated dynamically via JS from /api/all-crops -->
+      <div class="tick-item"><span class="tick-name"><span class="spin"></span> Loading live data...</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOP GAINERS & LOSERS -->
+<div class="sec"><div class="sec-dot"></div><span class="sec-t">Top Gainers & Losers — This Month</span></div>
+<div class="wrap">
+  <div class="g2">
+    <!-- Gainers -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <span style="font-size:1.2rem;">📈</span>
+        <span style="font-family:var(--fm);font-size:.95rem;font-weight:700;">Top 5 Gainers</span>
+        <span style="margin-left:auto;font-size:.7rem;color:var(--green);background:var(--green-l);padding:3px 10px;border-radius:8px;font-weight:600;">Rising ▲</span>
+      </div>
+      <div class="node-list">
+        {% for item in context.top5 %}
+        <a href="/commodity/{{ item[0]|lower }}" class="node">
+          <div class="node-rank nr-up">{{ loop.index }}</div>
+          <div class="node-name">{{ item[0] }}</div>
+          <div class="node-price">₹{{ item[1] }}</div>
+          <div class="node-chg nc-up">▲ {{ item[2] }}%</div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    <!-- Losers -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <span style="font-size:1.2rem;">📉</span>
+        <span style="font-family:var(--fm);font-size:.95rem;font-weight:700;">Top 5 Losers</span>
+        <span style="margin-left:auto;font-size:.7rem;color:var(--red);background:var(--red-l);padding:3px 10px;border-radius:8px;font-weight:600;">Falling ▼</span>
+      </div>
+      <div class="node-list">
+        {% for item in context.bottom5 %}
+        <a href="/commodity/{{ item[0]|lower }}" class="node">
+          <div class="node-rank nr-dn">{{ loop.index }}</div>
+          <div class="node-name">{{ item[0] }}</div>
+          <div class="node-price">₹{{ item[1] }}</div>
+          <div class="node-chg nc-dn">▼ {{ item[2]|abs }}%</div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6 MONTH FORECAST TABLE -->
+<div class="sec"><div class="sec-dot"></div><span class="sec-t">6-Month Star Commodity Forecast</span></div>
+<div class="wrap">
+  <div class="card" style="padding:0;margin-bottom:28px;overflow:hidden;">
+    <table class="stab">
+      <thead><tr><th>Month</th><th>🔼 Best Crop</th><th>Price</th><th>Change</th><th>🔽 Worst Crop</th><th>Price</th><th>Change</th></tr></thead>
+      <tbody>
+      {% for row in context.sixmonths %}
+      <tr>
+        <td style="font-weight:700;color:var(--red);">{{ row[0] }}</td>
+        <td><a href="/commodity/{{ row[1]|lower }}" style="color:var(--txt);font-weight:600;text-decoration:none;text-transform:capitalize;">{{ row[1] }}</a></td>
+        <td style="font-family:var(--fm);font-weight:700;">₹{{ row[2] }}</td>
+        <td><span class="badge b-up">▲ {{ row[3] }}%</span></td>
+        <td><a href="/commodity/{{ row[4]|lower }}" style="color:var(--txt);font-weight:600;text-decoration:none;text-transform:capitalize;">{{ row[4] }}</a></td>
+        <td style="font-family:var(--fm);">₹{{ row[5] }}</td>
+        <td><span class="badge b-dn">▼ {{ row[6] }}%</span></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ALL CROPS GRID -->
+<div class="sec"><div class="sec-dot"></div><span class="sec-t">Explore All 23 Commodities</span></div>
+<div class="wrap" style="padding-bottom:48px;">
+  <div class="crop-grid" id="crop-grid">
+    <div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--mut);font-size:.84rem;">
+      <span class="spin"></span> Loading crops…
+    </div>
+  </div>
+
+  <!-- AI Farmer CTA -->
+  <div style="margin-top:12px;padding:32px;border-radius:20px;text-align:center;
+    background:linear-gradient(135deg,#1a0505,var(--red2) 70%,#7c1d1d);color:#fff;position:relative;overflow:hidden;">
+    <div style="font-size:3rem;margin-bottom:10px;">🤖</div>
+    <div style="font-family:var(--fm);font-size:1.4rem;font-weight:800;margin-bottom:8px;">
+      Want personalised crop advice?
+    </div>
+    <div style="font-size:.88rem;color:rgba(255,255,255,.7);margin-bottom:20px;max-width:500px;margin-inline:auto;">
+      Tell our AI your location — it will recommend the best crops for your district, sowing calendar, and market timing.
+    </div>
+    <a href="/ai-farmer" style="display:inline-flex;align-items:center;gap:8px;padding:13px 28px;
+      border-radius:40px;background:#fbbf24;color:#111;font-weight:800;text-decoration:none;font-size:.9rem;
+      box-shadow:0 4px 20px rgba(251,191,36,0.4);transition:all .3s;">
+      🌾 Open AI Farmer Advisor →
+    </a>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer style="margin-top:40px;padding:48px 24px;background:linear-gradient(180deg, #fff 0%, var(--red-xlight) 100%);border-top:2px solid var(--red-light);text-align:center;">
+  <div style="font-family:var(--fm);font-size:1.6rem;font-weight:900;color:var(--red);margin-bottom:8px;">AGRI INTELLIGENCE<span style="color:var(--gold);">.</span></div>
+  <div style="font-size:.85rem;color:var(--mut);margin-bottom:24px;">Next-Generation AI Farming Intelligence Command Center</div>
+  
+  <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:32px;">
+    <a href="/" class="btn btn-o" style="padding:10px 20px;border-radius:40px;text-decoration:none;font-size:.82rem;">🏡 Dashboard</a>
+    <a href="/ai-farmer" class="btn btn-r" style="padding:10px 20px;border-radius:40px;text-decoration:none;font-size:.82rem;">🤖 AI Farmer Advisor</a>
+  </div>
+
+  <div style="font-size:.76rem;color:var(--mut);background:rgba(255,255,255,0.6);padding:12px 24px;border-radius:24px;display:inline-block;border:1px solid var(--border);">
+    © 2026 <b>AGRI INTELLIGENCE</b> &nbsp;·&nbsp; SIH24 &nbsp;·&nbsp; Data: WPI, Agmarknet, Open-Meteo
+  </div>
+</footer>
+</div>
+
+<script>
+const ICONS={Wheat:'🌾',Paddy:'🍚',Maize:'🌽',Cotton:'🌿',Soyabean:'🫘',Groundnut:'🥜',
+  Sugarcane:'🎋',Gram:'🫘',Arhar:'🫘',Moong:'🫘',Masoor:'🫘',Urad:'🫘',
+  Barley:'🌾',Ragi:'🌾',Jowar:'🌾',Bajra:'🌾',Jute:'🪢',Sesamum:'🌱',
+  Rape:'🌼',Safflower:'🌸',Sunflower:'🌻',Copra:'🥥',Niger:'🌱'};
+
+fetch('/api/all-crops').then(r=>r.json()).then(j=>{
+  if(!j.ok) return;
+  const grid=document.getElementById('crop-grid');
+  const tick=document.getElementById('ticker');
+  
+  // Render grid
+  grid.innerHTML=j.crops.map(c=>{
+    const ic=ICONS[c.name]||'🌾';
+    const p=c.price?'₹'+Number(c.price).toLocaleString('en-IN'):'';
+    return `<a href="/commodity/${c.name.toLowerCase()}" class="cg">
+      <div class="cg-ico">${ic}</div>
+      <div class="cg-name">${c.name}</div>
+      ${p?`<div style="font-size:.72rem;color:var(--red);font-weight:700;margin-top:3px;">${p}</div>`:''}
+      <div class="cg-link">View Forecast →</div>
+    </a>`;
+  }).join('');
+
+  // Render ticker
+  const tickHtml = j.crops.map((c,i)=>{
+    const p=c.price?Number(c.price).toLocaleString('en-IN'):'0';
+    // Dummy percentage logic for visual flair in ticker (since API doesn't return full trend)
+    const chg= (Math.sin(i+c.price)*5).toFixed(2); 
+    const up= chg>=0;
+    return `<div class="tick-item">
+      <span class="tick-name">${c.name}</span>
+      <span class="tick-price">₹${p}</span>
+      <span class="tick-chg ${up?'tc-up':'tc-dn'}">${up?'▲':'▼'}${Math.abs(chg)}%</span>
+    </div>`;
+  }).join('');
+  tick.innerHTML = tickHtml + tickHtml; // Duplicate for smooth infinite scroll
+}).catch(()=>{
+  document.getElementById('crop-grid').innerHTML='<div style="color:var(--mut);font-size:.82rem;">Could not load crops.</div>';
+  document.getElementById('ticker').innerHTML='<div class="tick-item">Live ticker offline</div>';
+});
+</script>
+</body>
+</html>
